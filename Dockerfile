@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # 编译项目
-RUN cargo build --release
+RUN cargo build --bin rust-api-server --release
 
 # 使用更小的基础镜像
 FROM debian:bullseye-slim
