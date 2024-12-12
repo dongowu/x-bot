@@ -1,4 +1,4 @@
-name: core
+name: CI/CD Pipeline
 
 on:
   push:
@@ -84,3 +84,37 @@ jobs:
 
       - name: Run Tests
         run: cargo test --all-features
+
+  docker:
+    name: Build and Deploy Docker Image
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      # Step 1: 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: 登录 Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Step 3: 构建并推送 Docker 镜像
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/rust-api-server:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/rust-api-server:latest
+
+      # Step 4: 安装 Railway CLI
+      - name: Install Railway CLI
+        run: |
+          curl -fsSL https://railway.app/install.sh | sh
+          export PATH="$HOME/.railway/bin:$PATH"
+
+      # Step 5: 部署到 Railway
+      - name: Deploy to Railway
+        run: |
+          railway deploy --image ${{ secrets.DOCKER_USERNAME }}/rust-api-server:latest --token ${{ secrets.RAILWAY_TOKEN }}
