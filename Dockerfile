@@ -11,7 +11,7 @@ COPY . .
 RUN cargo build --bin rust-api-server --release
 
 # 使用更小的基础镜像
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 # 设置工作目录
 WORKDIR /app
