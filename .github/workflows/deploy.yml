@@ -103,18 +103,18 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       # Step 3: 构建并推送 Docker 镜像
-      - name: Build and push Docker image
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/rust-api-server:latest .
-          docker push ${{ secrets.DOCKER_USERNAME }}/rust-api-server:latest
-
-      # Step 4: 安装 Railway CLI
-      - name: Install Railway CLI
-        run: |
-          curl -fsSL https://railway.app/install.sh | sh
-          export PATH="$HOME/.railway/bin:$PATH"
-
-      # Step 5: 部署到 Railway
-      - name: Deploy to Railway
-        run: |
-          railway deploy --image ${{ secrets.DOCKER_USERNAME }}/rust-api-server:latest --token ${{ secrets.RAILWAY_TOKEN }}
+#      - name: Build and push Docker image
+#        run: |
+#          docker build -t ${{ secrets.DOCKER_USERNAME }}/rust-api-server:latest .
+#          docker push ${{ secrets.DOCKER_USERNAME }}/rust-api-server:latest
+#
+#      # Step 4: 安装 Railway CLI
+#      - name: Install Railway CLI
+#        run: |
+#          curl -fsSL https://railway.app/install.sh | sh
+#          export PATH="$HOME/.railway/bin:$PATH"
+#
+#      # Step 5: 部署到 Railway
+#      - name: Deploy to Railway
+#        run: |
+#          railway deploy --image ${{ secrets.DOCKER_USERNAME }}/rust-api-server:latest --token ${{ secrets.RAILWAY_TOKEN }}

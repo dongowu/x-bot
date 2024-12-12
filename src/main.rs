@@ -1,48 +1,32 @@
-use axum::{
-    routing::{get, post},
-    Router, Json,
-};
-use serde::{Deserialize, Serialize};
-use std::net::SocketAddr;
+mod github;
+mod x_api;
+
+use anyhow::Result;
+use dotenv::dotenv;
+use std::env;
+use tokio::time::{sleep, Duration};
 
 #[tokio::main]
-async fn main() {
-    // 定义路由
-    let app = Router::new()
-        .route("/", get(root))
-        .route("/api", post(handle_request));
+async fn main() -> Result<()> {
+    dotenv().ok();
+    
+    let mut github_handler = github::GitHubHandler::new(
+        "xxxxx".to_string(),
+        "dongowu".to_string(),
+        "project_rust".to_string(),
+    ).await?;
+    
+    let x_handler = x_api::XHandler::new("xxxf".to_string())?;
 
-    // 服务地址
-    let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
-    println!("Server is running at http://{}", addr);
+    loop {
+        if let Some(contributor) = github_handler.check_new_contributor().await? {
+            x_handler.post_new_contributor(&contributor).await?;
+        }
 
-    // 绑定并启动服务
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
-}
+        if let Some(release) = github_handler.check_new_release().await? {
+            x_handler.post_new_release(&release).await?;
+        }
 
-// 根路由处理函数
-async fn root() -> &'static str {
-    "Welcome to Rust API!"
-}
-
-// API 路由处理函数
-async fn handle_request(Json(payload): Json<Payload>) -> Json<Response> {
-    let response = Response {
-        message: format!("Hello, {}!", payload.name),
-    };
-    Json(response)
-}
-
-// 定义请求和响应的结构体
-#[derive(Deserialize)]
-struct Payload {
-    name: String,
-}
-
-#[derive(Serialize)]
-struct Response {
-    message: String,
+        sleep(Duration::from_secs(300)).await; // 每5分钟检查一次
+    }
 }
