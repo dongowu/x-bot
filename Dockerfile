@@ -1,5 +1,5 @@
 # 基础镜像
-FROM rust:1.73 as builder
+FROM rust:latest as builder
 
 # 设置工作目录
 WORKDIR /app
