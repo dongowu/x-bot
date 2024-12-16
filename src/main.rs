@@ -9,7 +9,7 @@ use tokio::time::{sleep, Duration};
 #[tokio::main]
 async fn main() -> Result<()> {
     dotenv().ok();
-    let github_token = env::var("GITHUB_TOKEN").expect("GITHUB TOKEN must be SET");
+    let github_token = env::var("TOKEN").expect("GITHUB TOKEN must be SET");
     let x_token = env::var("X_TOKEN").expect("X TOKEN mut be set");
     let mut github_handler = github::GitHubHandler::new(
         github_token,
