@@ -1,16 +1,18 @@
 use anyhow::Result;
 use octocrab::Octocrab;
 use std::collections::HashSet;
+use std::thread::sleep;
 
 pub struct GitHubHandler {
     client: Octocrab,
     repo_owner: String,
     repo_name: String,
+    repo_branch:String,
     known_contributors: HashSet<String>,
 }
 
 impl GitHubHandler {
-    pub async fn new(token: String, repo_owner: String, repo_name: String) -> Result<Self> {
+    pub async fn new(token: String, repo_owner: String, repo_name: String,repo_branch:String) -> Result<Self> {
         let client = Octocrab::builder()
             .personal_token(token)
             .build()?;
@@ -20,6 +22,7 @@ impl GitHubHandler {
             repo_owner,
             repo_name,
             known_contributors: HashSet::new(),
+            repo_branch
         };
 
         handler.load_initial_contributors().await?;
@@ -38,6 +41,7 @@ impl GitHubHandler {
                 self.known_contributors.insert(author.login);
             }
         }
+
         Ok(())
     }
 
@@ -45,14 +49,14 @@ impl GitHubHandler {
         let commits = self.client
             .repos(&self.repo_owner, &self.repo_name)
             .list_commits()
-            .branch("master")
+            .branch(self.repo_branch.as_str())
             .send()
             .await?;
 
         for commit in commits {
             if let Some(author) = commit.author {
                 let login = author.login;
-                if !self.known_contributors.contains(&login) {
+                if self.known_contributors.contains(&login) {
                     self.known_contributors.insert(login.clone());
 
                     let message = commit.commit.message;
