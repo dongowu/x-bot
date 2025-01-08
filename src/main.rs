@@ -14,7 +14,7 @@ async fn main() -> Result<()> {
     let x_token = env::var("X_TOKEN").expect("X TOKEN MUST BE SET");
     let repo = env::var("REPO").expect("REPO MUST BE SET");
     let repo_owner = env::var("OWNER").expect("OWNER MUST BE SET");
-    println!("{:?},{:?},{:?},{:?}",github_token,repo_owner,repo_branch,repo);
+    println!("{:?},{:?},{:?},{:?}", github_token, repo_owner, repo_branch, repo);
     let mut github_handler = github::GitHubHandler::new(
         github_token,
         repo_owner,

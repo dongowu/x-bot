@@ -17,7 +17,7 @@ impl XHandler {
             "Delta got a new contributor {}!\n\nDetails: {}\n\nLink: {}",
             info.name, info.message, info.link
         );
-        
+
         self.client.post_tweet().text(text).send().await?;
         Ok(())
     }
@@ -27,7 +27,7 @@ impl XHandler {
             "New release ({}) of Delta out! 🎉\n\nLink to release notes: {}",
             info.version, info.link
         );
-        
+
         self.client.post_tweet().text(text).send().await?;
         Ok(())
     }

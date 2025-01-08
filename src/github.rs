@@ -7,12 +7,12 @@ pub struct GitHubHandler {
     client: Octocrab,
     repo_owner: String,
     repo_name: String,
-    repo_branch:String,
+    repo_branch: String,
     known_contributors: HashSet<String>,
 }
 
 impl GitHubHandler {
-    pub async fn new(token: String, repo_owner: String, repo_name: String,repo_branch:String) -> Result<Self> {
+    pub async fn new(token: String, repo_owner: String, repo_name: String, repo_branch: String) -> Result<Self> {
         let client = Octocrab::builder()
             .personal_token(token)
             .build()?;
@@ -22,7 +22,7 @@ impl GitHubHandler {
             repo_owner,
             repo_name,
             known_contributors: HashSet::new(),
-            repo_branch
+            repo_branch,
         };
 
         handler.load_initial_contributors().await?;
